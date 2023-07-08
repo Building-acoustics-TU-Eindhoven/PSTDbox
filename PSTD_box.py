@@ -8,6 +8,7 @@ from PSTD_box_func import *
 # - 2D propagation in a box
 #   o box boundaries are rigid or have a finite impedance
 #   o box boundaries are located at velocity nodes
+# Test some changes
 
 # MH 2012/10
 
