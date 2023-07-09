@@ -2,7 +2,8 @@
 
 #  PSTDbox
 Simple 2D PSTD sound propagation algorithm for a rectangular space.
-![](images/PSTDbox_snapshot.png){.screenshot width="98%"}
+
+![](images/PSTDbox_snapshot.png)
 
 ## Motivation
 The Pseudo-Spectral Time-Domain (PSTD) method is an efficient and accurate method to solve the wave equation. The extended PSTD method was published by Hornikx et al. in 2010 to apply this method to bounded problems as indoor spaces, where the boundaries can be modelled by real-valued impedances. The [openPSTD project](http://www.openpstd.org) aimed to develop a PSTD solver with GUI such that sound propagation in arbitrary 2D domains can be solved, including some limitations. The spatial domain in the openPSTD solver consists of a set of subdomains.
