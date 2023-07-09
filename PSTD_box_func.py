@@ -1,8 +1,6 @@
 from numpy import *
-#from scipy import *
 from scipy.fft import fft, ifft
 
-aa=fft(ones((500,2)),axis=1)
 
 def PML(PMLcells,ampmax,rho):
     # PML coefficients in free air

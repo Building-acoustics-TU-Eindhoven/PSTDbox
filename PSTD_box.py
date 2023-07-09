@@ -2,49 +2,17 @@ from numpy import *
 from scipy import *
 import matplotlib.pyplot as plt
 from PSTD_box_func import *
+from PSTD_box_input import *
 
 # Extended PSTD method to solve sound propagation
 #
-# - 2D propagation in a box
+# 2D propagation in a box
 #   o box boundaries are rigid or have a finite impedance
 #   o box boundaries are located at velocity nodes
-# Test some changes
+#   o box boundaries are locally reacting
+#
+#Created by Maarten Hornikx, 2023-07, based on a Python script prepared for openPSTD in 2012
 
-# MH 2012/10
-
-# Problems encountered
-# have a look in all vectors: the last index should be one index larger than actually referred to!
-# calling functions in a new defined function is troublesome (e.g. arange in PML function)
-# fft function does not work
-# how to get a multiple output from a single defined function?
-
-
-
-#--------------------------------------------------------------------------
-# INPUT SECTION
-#--------------------------------------------------------------------------
-# variable input
-
-outputname = 'PSTD_box'
-
-freqmax = 1200.             # maximum 1/3 octave band of interest in Hz
-print(freqmax)
-xdist = 10.             # horizontal dimension of box (integer number of meters)
-zdist = 10.             # vertical dimension of box (integer number of meters)
-spos=array([3.,0.])       # horizontal and vertical position of source from center of origin
-rpos=array([[0., 0.],[-1., -1.]])# horizontal and vertical positions of receiver from center of origin
-
-# absorption coefficient for left, right, lower and upper boundaries
-# The boundary is treated as rigid alfa < 0.005
-alfaleft = 0.4
-alfaright = 0.001
-alfalower = 0.1
-alfaupper = 0.8
-print(freqmax)
-calctime = 0.02        # calculation time in s
-
-PMLcells = 20       # number of cells of the damping layer at non-reflective boundary conditions
-# should be at least 20 (50 cells is preferable)
 
 #--------------------------------------------------------------------------
 # fixed input
@@ -210,9 +178,7 @@ px0 = pow(cos(angle(sdist)),2.)*p0
 pz0 = pow(sin(angle(sdist)),2.)*p0
 
 ##
-##
-##
-##% matrices constructed for staggered grid
+## matrices constructed for staggered grid
 ##
 xfactprig = exp(jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig
 xfactmrig = exp(-jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig
@@ -318,11 +284,6 @@ for ii in range(1,int(TRK+1)):
         Lpx[0:Nz,0:Nx] = Lp[0:Nz,PMLcells:PMLcells+Nx]
         Lpxright[0:Nz,0:PMLcells] = Lp[0:Nz,PMLcells+Nx:2*PMLcells+Nx]
 
-        # derivatives in lower and upper boundaries
-##        [Lp] = spatderp1r([p0lowertemp;p0uppertemp],xfactprig,1:2*PMLcells,2*Nxlower,1,1,1,2);
-##        Lpxlower[0:PMLcells,0:Nx] = Lp[0:PMLcells,1:Nx+1]
-##        Lpxupper[0:PMLcells,0:Nx] = Lp[PMLcells:2*PMLcells-1,1:Nx+1]
-
         #--------------------------------------------------------------
         # vertical pressure derivative
         #--------------------------------------------------------------
@@ -334,11 +295,6 @@ for ii in range(1,int(TRK+1)):
         Lpzlower[0:PMLcells,0:Nx] = Lp[0:Nx,0:PMLcells].transpose()
         Lpz[0:Nz,0:Nx] = Lp[0:Nx,PMLcells:PMLcells+Nz].transpose()
         Lpzupper[0:PMLcells,0:Nx] = Lp[0:Nx,PMLcells+Nz:2*PMLcells+Nz].transpose()
-##
-##        # derivatives in left and right boundaries
-##        [Lp] = spatderp1r([p0lefttemp p0righttemp],zfactprig,1:2*PMLcells,2*Nzleft,1,1,1,1);
-##        Lpzleft[0:Nzleft,0:PMLcells] = Lp[1:Nzleft+1,0:PMLcells]
-##        Lpzright[0:Nzright,0:PMLcells] = Lp[1:Nzleft+1,PMLcells:2*PMLcells]
 
         #--------------------------------------------------------------
         # horizontal velocity derivatives
@@ -352,13 +308,6 @@ for ii in range(1,int(TRK+1)):
         Luxleft[0:Nz,0:PMLcells] = Lu[0:Nz,0:PMLcells]
         Lux[0:Nz,0:Nx] = Lu[0:Nz,PMLcells:PMLcells+Nx]
         Luxright[0:Nz,0:PMLcells] = Lu[0:Nz,PMLcells+Nx:2*PMLcells+Nx]
-##        
-##        # derivatives in lower and upper boundaries
-##
-##        [Lu] = spatderp1r([zeros(PMLcells,1) u0lowertemp;zeros(PMLcells,1) u0uppertemp],xfactmrig,1:2*PMLcells,2*Nxlower,-1,1,2,2);
-##
-##        Luxlower[0:PMLcells,0:Nx] = Lu[0:PMLcells,0:Nx-1]
-##        Luxupper[0:PMLcells,0:Nx] = Lu[PMLcells:2*PMLcells,0:Nx]
         
         #--------------------------------------------------------------
         # vertical velocity derivative
@@ -469,10 +418,5 @@ for ii in range(1,int(TRK+1)):
         prec[ii-1,rr-1] = prectemp[round(floor(rz[rr-1])-1),round(floor(rx[rr-1])-1)-PMLcells]
 
 
-##    # store receiver position data
-##    if mod(ii,50) == 0
-##        eval(['sapve ../Results/',num2str(outputname),' prec rpos fs tfactRK'])
-#    plt.figure(1)
-#    pp=plt.imshow(p0)
-#    plt.show()
+
 savetxt('ptest.txt',prec)
