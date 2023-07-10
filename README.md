@@ -8,13 +8,13 @@ Simple 2D PSTD sound propagation algorithm for a rectangular space.
 ## Motivation
 The Pseudo-Spectral Time-Domain (PSTD) method is an efficient and accurate method to solve the wave equation. The extended PSTD method was published by Hornikx et al. in 2010 to apply this method to bounded problems as indoor spaces, where the boundaries can be modelled by real-valued impedances. The [openPSTD project](http://www.openpstd.org) aimed to develop a PSTD solver with GUI such that sound propagation in arbitrary 2D domains can be solved, including some limitations. The spatial domain in the openPSTD solver consists of a set of subdomains.
 This algorithm is the simple version of that project, as it only solves sound propatation in a 2D rectangular domain. The key features:
-- The domain dimensions and upper frequency can be changesd.
+- The domain dimensions and upper frequency can be changed.
 - A sound source can be arbitrarily positioned in the domain.
 - An impulse response can be captured at a receiver at any position in the domain. 
 - The four boundaries can be assigned any sound absorption coefficient.
 
 ## Installation
-PSTDbox only consists of threo python files, one main file: PSTD_box.py, one file containing the functions: PSTD_box_func.py, and one file containing the input variables. PSTD_box.py is the file to be run to carry our sound propagation calculations, PSTD_box.py is the file to be changed for changing input variables.
+PSTDbox only consists of three python files, one main file: PSTD_box.py, one file containing the functions: PSTD_box_func.py, and one file containing the input variables. PSTD_box.py is the file to be run to carry our sound propagation calculations, PSTD_box.py is the file to be changed for changing input variables.
 The requirements needed to run PSTDbox can be found in requirements.yml.
 
 ## Quick start
