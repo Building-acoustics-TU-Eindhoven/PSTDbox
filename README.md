@@ -17,9 +17,7 @@ This algorithm is the simple version of that project, as it only solves sound pr
 Code documentation can be found here.
 
 ## Forking and cloning
-If you are a collaborator...
-
-If you are not a collaborator...
+If you want to be a collaborator, please fork the repository and make pull request accordingly.
 
 ## Installation
 PSTDbox only consists of three python files, one main file: PSTD_box.py, one file containing the functions: PSTD_box_func.py, and one file containing the input variables. PSTD_box.py is the file to be run to carry our sound propagation calculations, PSTD_box.py is the file to be changed for changing input variables.
