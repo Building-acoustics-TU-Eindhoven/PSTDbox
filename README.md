@@ -1,7 +1,6 @@
-
-
 #  PSTDbox
 Simple 2D PSTD sound propagation algorithm for a rectangular space.
+
 ![](images/PSTDbox_snapshot.png)
 
 ## Motivation
