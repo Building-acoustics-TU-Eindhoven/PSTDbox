@@ -3,6 +3,13 @@ from scipy.fft import fft, ifft
 
 
 def PML(PMLcells,ampmax,rho):
+    """
+    PML stands for Perfectly Matched Layers
+    :param PMLcells: number of cells of the damping layer at non-reflective boundary conditions
+    :param ampmax: maximum value of PML attenuation
+    :param rho: density of air
+    :returns: attenuation coefficients of the PML cells for pressure and velocity
+    """ 
     # PML coefficients in free air
     alphaPMLp = ampmax*pow(arange(0.5,PMLcells-0.5+1.,1.)/PMLcells,4)  # attenuation coefficients of PMLcells for pressure
     alphaPMLu = rho*ampmax*pow(arange(0.,PMLcells+1.,1.)/PMLcells,4)   # attenuation coefficients of PMLcells for velocity
@@ -10,6 +17,12 @@ def PML(PMLcells,ampmax,rho):
     return alphaPMLp, alphaPMLu
 
 def Rmatrices(rho1,rho2,rho):
+    """
+    Rmatrices calculates the reflection and transmission coefficients at the boundaries of the domain for the PSTD method
+    :param Rmatrix: Matrix for the pressure variable
+    :param Rmatrixvel: Matrix for the acoustic velocity variable
+ 
+    """ 
     Zn1 = rho1/rho
     Rlw1 = (Zn1-1.)/(Zn1+1.)
     Rlw2 = (pow(Zn1,-1.)-1.)/(pow(Zn1,-1.)+1.)
@@ -29,8 +42,13 @@ def Rmatrices(rho1,rho2,rho):
     return Rmatrix, Rmatrixvel
 
 def kcalc(dx,N,cw,PMLcellsghost):
+    """
+    kcalc calculates wavenumber vectors for the calculation of spatial derivatives in the wavenumber domain
+    :param k, kcy, kgh: vector of wavenmumbers
+    :param jfact, jfactcy, kfactgh: vector of imaginary unit values
+    """
     # wavenumber discretization
-    kmax = pi/dx
+    kmax = pi/dx  # wave number
     dk = kmax/(N/2)               # wave number discretization
     k = concatenate((arange(0,kmax+dk,dk),  arange(kmax-dk,0,-dk)), axis=None)   
     jfact = 1j*concatenate((ones((1,round(N/2)+1)), -ones((1,round(N/2)-1))), axis=None)
@@ -46,6 +64,10 @@ def kcalc(dx,N,cw,PMLcellsghost):
     return k, jfact, kcy, jfactcy, kgh, jfactgh
 
 def spatderp3(p,xfactcy,xfactgh,N1,N2,Rmatrix,pos1,size1,pos2,size3,loc,PMLcells):
+    """
+    spatderp3 calculates the spatial derivatives of the pressure or velocity variables in the main domain and boundary domains
+    :param Lp: vector with spatial derivative values 
+    """
     # spatial derivative across three media
     #       1         2       3
     # -----------|---------|--------
@@ -66,7 +88,7 @@ def spatderp3(p,xfactcy,xfactgh,N1,N2,Rmatrix,pos1,size1,pos2,size3,loc,PMLcells
     [81,    48,    34,    28,    29,    24],
     [95,    56,    40,    33,    34,    28],
     [109,    64,    46,    38,    39,    32],
-    [123,    72,   52,   43,    44,   36,]])
+    [123,    72,   52,   43,    44,   36,]]) #???????
 
     (Acorr[:,0]<PMLcells/2.).nonzero()
     B = Acorr.compress((Acorr[:,0]<PMLcells/2.).flat)

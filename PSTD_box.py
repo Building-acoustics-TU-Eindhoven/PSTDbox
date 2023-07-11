@@ -1,3 +1,4 @@
+import numpy as np
 from numpy import *
 from scipy import *
 import matplotlib.pyplot as plt
@@ -18,9 +19,9 @@ from PSTD_box_input import *
 # fixed input
 rho = 1.2				# density of air
 c1 = 340.				# sound speed of air
-dxv = array([0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.])
-(dxv<c1/freqmax/2.).nonzero()
-dxtemp = dxv.compress((dxv<c1/freqmax/2.).flat)
+dxv = array([0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.]) # based on the sample frequency, we are selecting the discretisation which inverse is a whole number
+(dxv<c1/freqmax/2.).nonzero()  
+dxtemp = dxv.compress((dxv<c1/freqmax/2.).flat) # final descretization
 # spatial discretization
 dx = dxtemp[-1]
 dz = dx
@@ -85,7 +86,7 @@ if Zright <= 1000:
 else:
     rhoright = 1e200
 
-Rmatrixhor,Rmatrixhorvel= Rmatrices(rholeft,rhoright,rho)
+Rmatrixhor,Rmatrixhorvel= Rmatrices(rholeft,rhoright,rho) #calls the function Rmatrices
 
 if Zlower <= 1000:
     rholower = rho*Zlower
@@ -105,12 +106,12 @@ dxstagg = rx-floor(rx)
 dzstagg = rz-floor(rz)
 
 # temporal discretization
-dtRK = tfactRK*dx/c1
+dtRK = tfactRK*dx/c1 # time step
 TRK = round(calctime/dtRK) # number of time steps
 
-# coefficients in RK6 method (acc. to Bogey and Bailly 2004)
+# coefficients in Runge Kutta 6 method (acc. to Bogey and Bailly 2004)
 
-alfa = zeros((6,1))
+alfa = zeros((6,1)) # frequency independent absorption coefficents
 alfa[5] = 1.
 alfa[4] = 1./2.
 alfa[3] = 0.165919771368/alfa[4]
@@ -125,13 +126,13 @@ alfa[0] = 0.000891421261/(alfa[1]*alfa[2]*alfa[3]*alfa[4])
 # kzrig = wave number discretization in z-direction for left and right material
 # kzbox = wave number discretization in z-direction in box
 # kzmat = wave number discretization in z-direction for lower and upper boundaries
-kxrig,jfactxrig,kxbox,jfactxbox,kxmat,jfactxmat = kcalc(dx,2*Nx,Nx,PMLcells)
+kxrig,jfactxrig,kxbox,jfactxbox,kxmat,jfactxmat = kcalc(dx,2*Nx,Nx,PMLcells) #calls the function kcalc
 kzrig,jfactzrig,kzbox,jfactzbox,kzmat,jfactzmat = kcalc(dz,2*Nz,Nz,PMLcells)
 
 # initialization data
-u0left = zeros((Nzleft,Nxleft))
-w0left = zeros((Nzleft,Nxleft))
-p0left = zeros((Nzleft,Nxleft))
+u0left = zeros((Nzleft,Nxleft)) #u is horizontal velocity
+w0left = zeros((Nzleft,Nxleft)) #w is vertical velocity
+p0left = zeros((Nzleft,Nxleft)) #p is pressure
 px0left = zeros((Nzleft,Nxleft))
 pz0left = zeros((Nzleft,Nxleft))
 
@@ -180,15 +181,11 @@ pz0 = pow(sin(angle(sdist)),2.)*p0
 ##
 ## matrices constructed for staggered grid
 ##
-xfactprig = exp(jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig
-xfactmrig = exp(-jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig
 xfactpbox = exp(jfactxbox*kxbox*dx/2.)*jfactxbox*kxbox
 xfactmbox = exp(-jfactxbox*kxbox*dx/2.)*jfactxbox*kxbox
 xfactpmat = exp(jfactxmat*kxmat*dx/2.)*jfactxmat*kxmat
 xfactmmat = exp(-jfactxmat*kxmat*dx/2.)*jfactxmat*kxmat
 
-zfactprig = exp(jfactzrig*kzrig*dz/2.)*jfactzrig*kzrig
-zfactmrig = exp(-jfactzrig*kzrig*dz/2.)*jfactzrig*kzrig
 zfactpbox = exp(jfactzbox*kzbox*dz/2.)*jfactzbox*kzbox
 zfactmbox = exp(-jfactzbox*kzbox*dz/2.)*jfactzbox*kzbox
 zfactpmat = exp(jfactzmat*kzmat*dz/2.)*jfactzmat*kzmat
@@ -199,16 +196,16 @@ zfactmmat = exp(-jfactzmat*kzmat*dz/2.)*jfactzmat*kzmat
 ufact = exp(-alphaPMLu/rho*dtRK)
 pfact = exp(-alphaPMLp*dtRK)
 
-alphaptemppxl= ones((Nz,1))*pfact[arange(pfact.shape[0]-1,-1,-1)]
-alphaptemppxr = ones((Nz,1))*pfact[0:]
-alphaptemppzl = pfact[arange(pfact.shape[0]-1,-1,-1)].reshape(-1,1)*ones((1,Nx))
+alphaptemppxl= ones((Nz,1))*pfact[arange(pfact.shape[0]-1,-1,-1)] #x left?
+alphaptemppxr = ones((Nz,1))*pfact[0:]                            #x right
+alphaptemppzl = pfact[arange(pfact.shape[0]-1,-1,-1)].reshape(-1,1)*ones((1,Nx)) #z left
 alphaptemppzr = pfact[0:].reshape(-1,1)*ones((1,Nx))
 
 alphaptempul = ones((Nz,1))*ufact[arange(ufact.shape[0]-2,-1,-1)]
 alphaptempur = ones((Nz,1))*ufact[1:]
 
 alphaptempwl = ufact[arange(ufact.shape[0]-2,-1,-1)].reshape(-1,1)*ones((1,Nx))
-alphaptempwr = ufact[1:].reshape(-1,1)*ones((1,Nx))
+alphaptempwr = ufact[1:].reshape(-1,1)*ones((1,Nx)) 
 
 prec = zeros((TRK,rx.shape[0]))
 ##
@@ -394,13 +391,10 @@ for ii in range(1,int(TRK+1)):
     #--------------------------------------------------------------------------
     # Interpolation to receiver positions
 
-
-
     for rr in range(1,rx.shape[0]+1):
 
-        xfactpboxstagg = exp(jfactxbox*kxbox*dxstagg[rr-1]*dx)
+        xfactpboxstagg = exp(jfactxbox*kxbox*dxstagg[rr-1]*dx) 
         xfactpmatstagg = exp(jfactxmat*kxmat*dxstagg[rr-1]*dx)
-        xfactprigstagg = exp(jfactxrig*kxrig*dxstagg[rr-1]*dx)
         
         prectempbox = spatderp3(concatenate((p0left, p0, p0right), axis=1),\
                                   xfactpboxstagg,xfactpmatstagg,arange(1,Nz+1),pow(2,ceil(log2(Nx+2*PMLcells))),\
@@ -418,5 +412,35 @@ for ii in range(1,int(TRK+1)):
         prec[ii-1,rr-1] = prectemp[round(floor(rz[rr-1])-1),round(floor(rx[rr-1])-1)-PMLcells]
 
 
-
 savetxt('ptest.txt',prec)
+
+#Graph for prec number 1
+t = np.arange(0, TRK, 1)
+
+fig, ax = plt.subplots()
+
+ax.plot(t,prec[:,0])
+
+
+#OPEN FILE OF PREC_1 FROM MATLAB (THIS IS ONLY FOR TEST 1)
+
+# Open the file from matlab (Test 1 Receiver 1) in read mode
+with open("prec_MAT.txt", 'r') as file:
+    # Read each line from the file
+    lines = file.readlines()
+
+# Process the lines and extract the values
+data = []
+for line in lines:
+    # Split the line by whitespace and convert values to floats
+    values = [float(val) for val in line.strip().split()]
+    data.append(values)
+
+# Print the extracted data
+for values in data:
+    print(values)
+
+rec_1 =[ ]
+for i in data:
+    rec_1.append(i[0])
+ax.plot(t,rec_1)

@@ -11,6 +11,12 @@ This algorithm is the simple version of that project, as it only solves sound pr
 - An impulse response can be captured at a receiver at any position in the domain. 
 - The four boundaries can be assigned any sound absorption coefficient.
 
+## Documentation
+Code documentation can be found here.
+
+## Forking and cloning
+If you want to be a collaborator, please fork the repository and make pull request accordingly.
+
 ## Installation
 PSTDbox only consists of three python files, one main file: PSTD_box.py, one file containing the functions: PSTD_box_func.py, and one file containing the input variables. PSTD_box.py is the file to be run to carry our sound propagation calculations, PSTD_box.py is the file to be changed for changing input variables.
 The requirements needed to run PSTDbox can be found in requirements.yml.
