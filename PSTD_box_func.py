@@ -4,7 +4,7 @@ from scipy.fft import fft, ifft
 
 def PML(PMLcells,ampmax,rho):
     """
-    PML stands for Perfectly Matched Layers (IF: A description of the function is good for understanding what it does)
+    PML stands for Perfectly Matched Layers
     :param PMLcells: number of cells of the damping layer at non-reflective boundary conditions
     :param ampmax: maximum value of PML attenuation
     :param rho: density of air
@@ -18,7 +18,10 @@ def PML(PMLcells,ampmax,rho):
 
 def Rmatrices(rho1,rho2,rho):
     """
-    Description of function as above
+    Rmatrices calculates the reflection and transmission coefficients at the boundaries of the domain for the PSTD method
+    :param Rmatrix: Matrix for the pressure variable
+    :param Rmatrixvel: Matrix for the acoustic velocity variable
+ 
     """ 
     Zn1 = rho1/rho
     Rlw1 = (Zn1-1.)/(Zn1+1.)
@@ -40,7 +43,9 @@ def Rmatrices(rho1,rho2,rho):
 
 def kcalc(dx,N,cw,PMLcellsghost):
     """
-    Description of function as above
+    kcalc calculates wavenumber vectors for the calculation of spatial derivatives in the wavenumber domain
+    :param k, kcy, kgh: vector of wavenmumbers
+    :param jfact, jfactcy, kfactgh: vector of imaginary unit values
     """
     # wavenumber discretization
     kmax = pi/dx  # wave number
@@ -60,9 +65,8 @@ def kcalc(dx,N,cw,PMLcellsghost):
 
 def spatderp3(p,xfactcy,xfactgh,N1,N2,Rmatrix,pos1,size1,pos2,size3,loc,PMLcells):
     """
-    Description of function as above plus the below
-    spatderp???
-    what it returns?
+    spatderp3 calculates the spatial derivatives of the pressure or velocity variables in the main domain and boundary domains
+    :param Lp: vector with spatial derivative values 
     """
     # spatial derivative across three media
     #       1         2       3
