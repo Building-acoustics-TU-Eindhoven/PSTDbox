@@ -19,9 +19,9 @@ from PSTD_box_input import *
 # fixed input
 rho = 1.2				# density of air
 c1 = 340.				# sound speed of air
-dxv = array([0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.]) ###???What is this?
-(dxv<c1/freqmax/2.).nonzero()  ###???What is this?
-dxtemp = dxv.compress((dxv<c1/freqmax/2.).flat) ###???What is this?
+dxv = array([0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.]) # based on the sample frequency, we are selecting the discretisation which inverse is a whole number
+(dxv<c1/freqmax/2.).nonzero()  
+dxtemp = dxv.compress((dxv<c1/freqmax/2.).flat) # final descretization
 # spatial discretization
 dx = dxtemp[-1]
 dz = dx
@@ -111,7 +111,7 @@ TRK = round(calctime/dtRK) # number of time steps
 
 # coefficients in Runge Kutta 6 method (acc. to Bogey and Bailly 2004)
 
-alfa = zeros((6,1)) #absorption coefficient at different frequencies?
+alfa = zeros((6,1)) # frequency independent absorption coefficents
 alfa[5] = 1.
 alfa[4] = 1./2.
 alfa[3] = 0.165919771368/alfa[4]
@@ -181,15 +181,11 @@ pz0 = pow(sin(angle(sdist)),2.)*p0
 ##
 ## matrices constructed for staggered grid
 ##
-xfactprig = exp(jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig #what is rig? box? mat?
-xfactmrig = exp(-jfactxrig*kxrig*dx/2.)*jfactxrig*kxrig
 xfactpbox = exp(jfactxbox*kxbox*dx/2.)*jfactxbox*kxbox
 xfactmbox = exp(-jfactxbox*kxbox*dx/2.)*jfactxbox*kxbox
 xfactpmat = exp(jfactxmat*kxmat*dx/2.)*jfactxmat*kxmat
 xfactmmat = exp(-jfactxmat*kxmat*dx/2.)*jfactxmat*kxmat
 
-zfactprig = exp(jfactzrig*kzrig*dz/2.)*jfactzrig*kzrig
-zfactmrig = exp(-jfactzrig*kzrig*dz/2.)*jfactzrig*kzrig
 zfactpbox = exp(jfactzbox*kzbox*dz/2.)*jfactzbox*kzbox
 zfactmbox = exp(-jfactzbox*kzbox*dz/2.)*jfactzbox*kzbox
 zfactpmat = exp(jfactzmat*kzmat*dz/2.)*jfactzmat*kzmat
@@ -399,7 +395,6 @@ for ii in range(1,int(TRK+1)):
 
         xfactpboxstagg = exp(jfactxbox*kxbox*dxstagg[rr-1]*dx) 
         xfactpmatstagg = exp(jfactxmat*kxmat*dxstagg[rr-1]*dx)
-        xfactprigstagg = exp(jfactxrig*kxrig*dxstagg[rr-1]*dx)
         
         prectempbox = spatderp3(concatenate((p0left, p0, p0right), axis=1),\
                                   xfactpboxstagg,xfactpmatstagg,arange(1,Nz+1),pow(2,ceil(log2(Nx+2*PMLcells))),\
